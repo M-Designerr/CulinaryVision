@@ -271,10 +271,6 @@ def start_case(input_string):
     modified_string = re.sub(r'[_-]', ' ', input_string)
     return modified_string
 
-def make_unique(string):
-    ident = uuid4().__str__()
-    return f"{ident}-{string}"
-
 #ALL ROUTES
 
 #######---------HOMEPAGE--------########
@@ -289,13 +285,7 @@ def index():
         if file.filename == '':
             return 'No selected file'
 
-        file_name = make_unique(file.filename)
-
-        file_path = './static/uploads/' + file_name
-        file.save(file_path)
-        # session['file_path'] = '/uploads/' + file_name
-        # session['predicted_class'] = classify_image(file_path)
-        code_name = classify_image(file_path)[0]
+        code_name = classify_image(file.stream)[0]
 
         return jsonify({'name': code_name})
 
