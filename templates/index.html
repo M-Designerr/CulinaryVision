@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Page</title>
+    
+    <style>
+        h1 {
+            margin: 0 auto;
+            margin-top: 5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        html {
+            margin: 0px;
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            background-image: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ), url("../static/bg2.jpg");
+            background-color: #cccccc; /* Used if the image is unavailable */
+            background-position: center; /* Center the image */
+            background-repeat: no-repeat; /* Do not repeat the image */
+            background-size: cover; /* Resize the background image to cover the entire container */
+            margin: 0px;
+            min-height: 100%;
+            width: 100%;
+        }
+        .image-preview-container {
+            width: 50%;
+            margin: 0 auto;
+            margin-top: 30px;
+            border: 5px solid rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            border-radius: 20px;
+            text-align: center;
+            background-image: linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) )
+        }
+
+        .image-preview-container img {
+            max-width: 100%;
+            max-height: 300px; /* Set max height to limit the size */
+            margin-bottom: 30px;
+            border-radius: 10px;
+        }
+
+        .image-preview-container label {
+            display: block;
+            height: 45px;
+            text-align: center;
+            background: #150f1e94;
+            color: #fff;
+            font-size: 15px;
+            text-transform: uppercase;
+            font-weight: 400;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .search-btn {
+            display: block;
+            margin-top: 20px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 10px 20px;
+            background-color: #150f1e94;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+            text-transform: uppercase;
+        }
+
+        .search-btn:hover {
+            background-color: #000000bb;
+        }
+
+        .image-preview-container label:hover {
+            background-color: #000000bb;
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        /* Custom styles */
+        .navbar {
+            display: flex;
+            justify-content: center; /* Center items horizontally */
+            background-color: #150f1ecf;
+            position: relative;
+            min-height: 50px;
+            margin-bottom: 20px;
+            padding: .3rem 1rem;
+        }
+
+        .navbar-brand img {
+            max-height: 50px; /* Adjust height as needed */
+            width: auto;
+        }
+    </style>
+    <nav class="navbar navbar-custom">
+        <a class="navbar-brand d-flex justify-content-center d-flex align-items-center" href="/">
+          <img src="../static/logo.png" width="267" height="40" class="d-inline-block align-top" alt="">
+        </a>
+      </nav>
+</head>
+<body>
+    <div class="image-preview-container py-5 ">
+        <div class="preview d-flex justify-content-center d-flex align-items-center">
+            <img id="preview-selected-image" src="../static/bg.jpg" />
+        </div>
+        <label for="file-upload">Upload Image</label>
+        <input type="file" class="file-input" id="file-upload" accept="image/*" onchange="previewImage(event);" />
+        <button class="search-btn" onclick="uploadFile()">Search</button>
+    </div>
+
+    <script>
+        const previewImage = (event) => {
+            const imageFiles = event.target.files;
+            const imageFilesLength = imageFiles.length;
+            const imagePreviewElement = document.querySelector("#preview-selected-image");
+            if (imageFilesLength > 0) {
+                const imageSrc = URL.createObjectURL(imageFiles[0]);
+                imagePreviewElement.src = imageSrc;
+                imagePreviewElement.style.display = "block";
+            }else {
+                // Set default image path
+                const defaultImagePath = "../static/bg.jpg"; // Replace with your default image path
+                imagePreviewElement.src = defaultImagePath;
+                imagePreviewElement.style.display = "block";
+            }
+        };
+
+        function uploadFile() {
+            const fileInput = document.getElementById('file-upload');
+            const file = fileInput.files[0];
+            event.preventDefault();
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch('/', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    // If the response is successful, redirect to the result page
+                    return response.json();
+                } else {
+                    // Handle error response
+                    console.error('Error uploading file:', response.statusText);
+                }
+            })
+            .then(data => {
+                // If the response is successful, redirect to the result page with the extracted dish name
+                console.log('Received data:', data);
+                window.location.href = '/recipe/' + encodeURIComponent(data.name);
+            })
+            .catch(error => {
+                // Handle fetch error
+                console.error('Error uploading file:', error);
+            });
+        }
+
+
+    </script>
+</body>
+</html>
